@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "name": "Krishna",
+    "address": "kathmandu"
+  },
+  {
+    "id": 2,
+    "name": "DInesh",
+    "address": "lalitpur"
+  },
+  {
+    "id": 3,
+    "name": "bijay",
+    "address": "sankhamuel"
+  },
+  {
+    "id": 4,
+    "name": "vim",
+    "address": "misrauli"
+  },
+  {
+    "id": 5,
+    "name": "abc",
+    "address": "xyzzz"
+  }
+]

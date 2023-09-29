@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "tshirt",
+    "price": "20",
+    "description": "this is branded tshirt",
+    "quantity": 20,
+    "product_type": "clothing"
+  },
+  {
+    "id": 2,
+    "name": "radio",
+    "price": "100",
+    "description": "this is radio fm",
+    "quantity": 4,
+    "product_type": "electronics"
+  },
+  {
+    "id": 3,
+    "name": "rice",
+    "price": "100",
+    "description": "this is a pure basmati rice",
+    "quantity": 100,
+    "product_type": "glocery"
+  },
+  {
+    "id": 4,
+    "name": "rajma",
+    "price": "20",
+    "description": "this is a pure rajma",
+    "quantity": "20",
+    "product_type": "glocery"
+  },
+  {
+    "id": 5,
+    "name": "tv",
+    "price": "1000",
+    "description": "kkkk",
+    "quantity": 4,
+    "product_type": "electronics"
+  },
+  {
+    "id": 6,
+    "name": "chaana",
+    "price": "120",
+    "description": "this is a pure chaana ",
+    "quantity": 4,
+    "product_type": "glocery"
+  },
+  {
+    "id": 21,
+    "name": "suit",
+    "price": "200",
+    "description": "this is tshirt",
+    "quantity": 20,
+    "product_type": "clothing"
+  },
+  {
+    "id": 31,
+    "name": "jeans",
+    "price": "200",
+    "description": "this is tshirt",
+    "quantity": 20,
+    "product_type": "clothing"
+  }
+]
