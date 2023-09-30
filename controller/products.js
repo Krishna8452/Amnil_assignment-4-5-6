@@ -11,7 +11,7 @@ exports.getAllProducts = async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 };
-
+   
 exports.getProduct = async (req, res) => {
   const productId = req.params.id;
   try {
