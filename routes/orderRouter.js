@@ -5,7 +5,6 @@ const {addToCart, getOrders, getOrderById, checkout} = require("../controller/or
 
 router.route('/').get(getOrders)
 router.route('/:id').get(getOrderById)
-router.route('/cart/addToCart').post(addToCart)
 router.route('/cart/checkout/:cartId').post(checkout)
 
 module.exports = router
