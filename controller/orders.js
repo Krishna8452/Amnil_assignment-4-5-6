@@ -5,20 +5,21 @@ exports.checkout = async (req, res) => {
     try{
         const cartId = req.params.cartId
         const cartToAdd = await carts.findById(cartId)
-        if(!cartToAdd){
-            res.status(404).json({message:"no cart item found"})
-        }else{
+        if(cartToAdd.price >= 200){
             const orderToAdd = {
             cartId,
             userId: cartToAdd.userId,
             items: cartToAdd.items,
             price: cartToAdd.price
             };
+            await carts.findByIdAndRemove(cartId);
             const added = await orders.create(orderToAdd)
             res.json({added, success:'cart checkout successfully'});
-        }
+        }else{
+            res.status(400).json({ message: 'There must  be minimum price of Rs 200 in shopping cart to get order!!!!!'})
+        }     
     }catch(error){
-    res.status(500).json({ error: "failed to checkout the cart item" });
+        res.status(500).json({ error: "failed to checkout the cart item" });
     }
 }
 
