@@ -5,6 +5,10 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: true,
   },
+  cartId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
   items: [
     {
       productId: {
@@ -20,7 +24,9 @@ const orderSchema = new mongoose.Schema({
   price: {
     type: Number,
     default: 0,
-  },
+  }
+}, {
+  timestamps: true 
 });
 
 const orders = mongoose.model('orders', orderSchema);

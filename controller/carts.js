@@ -28,7 +28,7 @@ exports.addToCart = async (req, res) => {
       }
 
       // Recalculate the total price
-      let totalPrice = 0;
+      let totalPrice = 0; 
       for (const item of updatedItems) {
         const product = await products.findById(item.productId);
         if (!product) {

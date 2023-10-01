@@ -15,12 +15,14 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-    },
+    },{_id: false},
   ],
   price: {
     type: Number,
     default: 0,
   },
+},{
+  timestamps: true
 });
 
 const carts = mongoose.model('carts', cartSchema);
