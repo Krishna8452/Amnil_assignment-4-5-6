@@ -1,5 +1,5 @@
-const carts = require("../models/cartModel")
-const orders = require("../models/orderModel")
+const carts = require("../../models/cartModel")
+const orders = require("../../models/orderModel")
 
 exports.checkout = async (req, res) => {
     try{

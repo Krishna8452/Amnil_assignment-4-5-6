@@ -1,4 +1,4 @@
-const products = require("../models/productModel");
+const products = require("../../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -81,14 +81,23 @@ exports.outOfStockProduct = async (req, res) => {
 };
 
 exports.filterProduct = async (req, res) => {
-  const value = req.query.product_type;
-  const data = await products.find({ product_type: value });
-  res.json(data);
+  try{
+    const value = req.query.product_type;
+    const data = await products.find({ product_type: value });
+    res.json(data);
+  }catch(error){
+    res.status(500).json({ error: "An error occurred" });
+
+  }
 };
 exports.sortProduct = async (req, res) => {
-  const data = await products.find({});
-  const sortedProduct = data.sort((a, b) => a.price - b.price);
-  res.json(sortedProduct);
+  try{
+    const data = await products.find({});
+    const sortedProduct = data.sort((a, b) => a.price - b.price);
+    res.json(sortedProduct);
+  }catch(error){
+    res.status(500).json({ error: "An error occurred" });
+  }
 };
 
 exports.searchProduct = async (req, res) => {

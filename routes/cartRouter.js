@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { addToCart, getAllCart, getCartById}  = require("../controller/carts");
+const { addToCart, getAllCart, getCartById}  = require("../modules/cart/cartController");
 
 
  router.route('/add').post(addToCart)

@@ -1,16 +1,14 @@
 
-const carts = require("../models/cartModel");
-const products = require("../models/productModel");
+const carts = require("../../models/cartModel");
+const products = require("../../models/productModel");
 
 exports.addToCart = async (req, res) => {
   const { userId, items } = req.body;
 
   try {
-    // checking either to create new cart for existing user or not
     const existingCart = await carts.findOne({ userId });
 
     if (existingCart) {
-      // If the user has an existing cart, updating it 
       let updatedItems = [...existingCart.items];
 
       for (const newItem of items) {
@@ -19,15 +17,12 @@ exports.addToCart = async (req, res) => {
         );
 
         if (existingItem) {
-          // If the product already exists in the cart, increase the quantity
           existingItem.quantity += newItem.quantity;
         } else {
-          // If the product is new to the cart, add it
           updatedItems.push(newItem);
         }
       }
 
-      // Recalculate the total price
       let totalPrice = 0; 
       for (const item of updatedItems) {
         const product = await products.findById(item.productId);
@@ -37,7 +32,6 @@ exports.addToCart = async (req, res) => {
         totalPrice += product.price * item.quantity;
       }
 
-      // Update the existing cart with the updated items and price
       await carts.updateOne(
         { userId },
         {
@@ -50,7 +44,6 @@ exports.addToCart = async (req, res) => {
 
       res.status(200).json({ success: "Cart updated successfully" });
     } else {
-      // If the user does not have an existing cart, creating new cart for new user
       let totalPrice = 0;
       for (const item of items) {
         const product = await products.findById(item.productId);
@@ -75,7 +68,9 @@ exports.addToCart = async (req, res) => {
 
 exports.getAllCart = async (req, res) =>{
     try{
-        const allCarts = await carts.find({});
+        const allCarts = await carts.find({})
+        .populate('userId')
+        .populate('items.productId');
         if(allCarts){
             res.status(200).json({allCarts , message:"all data of carts are fetched successfully"})
         }
