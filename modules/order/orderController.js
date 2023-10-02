@@ -16,7 +16,7 @@ exports.checkout = async (req, res) => {
             const added = await orders.create(orderToAdd)
             res.json({added, success:'cart checkout successfully'});
         }else{
-            res.status(400).json({ message: 'There must  be minimum price of Rs 200 in shopping cart to get order!!!!!'})
+            res.status(400).json({ message: 'There must  be minimum price of Rs 200 in shopping cart to checkout!!!!!'})
         }     
     }catch(error){
         res.status(500).json({ error: "failed to checkout the cart item" });
@@ -26,6 +26,8 @@ exports.checkout = async (req, res) => {
 exports.getOrders = async (req, res) => {
     try{
         const allOrderedData = await orders.find({})
+        .populate('userId')
+        .populate('items.productId')
         res.status(200).json({allOrderedData, success:"all orderd data are listed above"});
     }catch(error){
         res.status(500).json({error:"failed to listout all orders"})

@@ -3,7 +3,6 @@ const router = express.Router();
 
 const { getAllProducts, getProduct, addProduct, editProduct, deleteProduct, outOfStockProduct, filterProduct, sortProduct , searchProduct}  = require("../modules/product/productController");
 
-
 router.route('/outOfStock').get(outOfStockProduct)
 router.route('/filter').get(filterProduct)
 router.route('/sort').get(sortProduct)

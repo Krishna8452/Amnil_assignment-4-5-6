@@ -3,7 +3,6 @@ const router = express.Router();
 
 const { addToCart, getAllCart, getCartById}  = require("../modules/cart/cartController");
 
-
  router.route('/add').post(addToCart)
  router.route('/').get(getAllCart)
  router.route('/:id').get(getCartById)
