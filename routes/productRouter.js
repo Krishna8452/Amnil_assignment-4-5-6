@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const {jwtAuthentication} = require('../middleware/jwtAuthentication')
 
 const {
   getAllProducts,
@@ -17,7 +18,7 @@ router.route("/outOfStock").get(outOfStockProduct);
 router.route("/filter").get(filterProduct);
 router.route("/sort").get(sortProduct);
 router.route("/search").get(searchProduct);
-router.route("/").get(getAllProducts);
+router.route("/").get(jwtAuthentication, getAllProducts);
 router.route("/:id").get(getProduct);
 router.route("/add").post(addProduct);
 router.route("/edit/:id").put(editProduct);

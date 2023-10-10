@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {basicAuthentication} = require('../middleware/basicAunthentication')
+const {basicAuthentication} = require('../middleware/basicAuthentication')
 
 const { addToCart, getAllCart, getCartById}  = require("../modules/cart/cartController");
 
