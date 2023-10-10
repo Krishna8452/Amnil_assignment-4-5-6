@@ -57,13 +57,12 @@ exports.addStore = async (req, res) => {
 };
 
 exports.getAllStores = async (req, res) => {
-    try{
-    const allStores = await stores.find({}).populate('userId')
-    res.status(200).json({ allStores, message: "all lists of stores are listed above"});
-    }catch(error){
-    res.status(500).json({ error: "Internal Server Error" });
-    }
-
+  try{
+  const allStores = await stores.find({}).populate('userId')
+  res.status(200).json({ allStores, message: "all lists of stores are listed above"});
+  }catch(error){
+  res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 exports.getSingleStore = async (req, res) =>{

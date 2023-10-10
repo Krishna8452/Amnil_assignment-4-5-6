@@ -1,5 +1,5 @@
 const users = require('../../models/userModel')
-
+const bcrypt = require('bcrypt')
 exports.getAllUsers = async(req, res) => {
   const data = await users.find({});
   res.json(data);
@@ -15,7 +15,16 @@ exports.getUser = async (req, res) =>{
 }
 
 exports.addUser = async (req, res) =>{
-    await users.create(req.body)
+  const {name, username, password, address, phone } = req.body
+  const bcryptedPassword = await bcrypt.hash(password, 10);
+  const newUser ={
+    name:name,
+    username:username,
+    address:address,
+    phone:phone,
+    password:bcryptedPassword
+  }
+    await users.create(newUser)
     res.status(201).json({success: 'user created successfully'});
 }
 

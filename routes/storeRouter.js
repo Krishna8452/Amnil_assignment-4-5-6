@@ -7,6 +7,6 @@ const { addStore, newLogo, getAllStores, getSingleStore, deleteStore, updateStor
 router.route("/add").post(newLogo,addStore ); 
 router.route("/delete/:id").delete(deleteStore ); 
 router.route("/").get(getAllStores);
-router.route("/edit/:id").put(updateStore);
+router.route("/:id").get(getSingleStore);
 
 module.exports = router;
