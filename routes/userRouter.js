@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllUsers, getUser, addUser, editUser, deleteUser,userLogin }  = require("../modules/user/userController");
+const { getAllUsers, getUser, addUser, editUser, deleteUser,userLogin, googleSignUp, googleSignIn}  = require("../modules/user/userController");
 
  router.route('/').get(getAllUsers)
  router.route('/login').post(userLogin)
@@ -9,5 +9,7 @@ const { getAllUsers, getUser, addUser, editUser, deleteUser,userLogin }  = requi
  router.route('/add').post(addUser)
  router.route('/edit/:id').put(editUser)
  router.route('/delete/:id').delete(deleteUser)
+ router.route('/auth/googleSignUp').post(googleSignUp)
+ router.route('/auth/googleSignIn').post(googleSignIn)
 
  module.exports = router;

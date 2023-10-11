@@ -1,7 +1,9 @@
+require("dotenv").config();
 const users = require('../../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-require("dotenv").config();
+
+const {admin} = require("../../firebase/admin")
 
 exports.getAllUsers = async(req, res) => {
   const data = await users.find({});
@@ -61,50 +63,59 @@ exports.deleteUser = async (req, res) =>{
 }
 
 exports.userLogin = async (req,res)=>{
-  // try {
+  try {
    const {username, password} = req.body;
    const user = await users.findOne({username})
    const passwordMatch = await bcrypt.compare(password, user.password )
-   if(!passwordMatch) {res.send("Invalid login details");}
-   const payload = {
-    user:{ 
-          name: user.username,
-          password:user.password
-          }
-        }
+   if(!passwordMatch){
+    return res.send("Invalid login details");
+  }
+  const payload = {
+      user:
+      { 
+        name: user.username,
+        password:user.password
+      }
+    }
    const token = jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:'1h'})
    res.send({token: token})
-  // } catch (error) {
-  //   return res.status(400).send("Invalid details")
-  // }
+  }catch(error) {
+    return res.status(400).send("Invalid details")
+  }
  }
-//  exports.loginUser = async (req, res) => {
-//   try {
-//     const { gmail, password } = req.body;
-//     if (!gmail || !password) {
-//       return res.status(400).json("both field are required...");
-//     }
-//     const user = await User.findOne({ gmail });
-//     const comparedPassword = await bcrypt.compare(password, user.password);
 
-//     if (user && comparedPassword) {
-//       const payload = {
-//         user: {
-//           name: user.name,
-//           gmail: user.gmail,
-//           id: user.id,
-//           phone: user.phone,
-//           password: user.password,
-//         },
-//       };
-//       const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-//         expiresIn: "60m",
-//       });
-//       return res.status(200).json({ accessToken });
-//     } else {
-//       return res.status(200).json({ error: "unmatched credential..." });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({ error: error.message });
-//   }
-// };
+ exports.googleSignUp = async (req, res) => {
+  try{
+    const user = {
+    email:req.body.email,
+    password:req.body.password
+  }
+  const userResponse = await admin.auth().createUser({
+    email:user.email,
+    password:user.password,
+    emailVerified:false,
+    disabled:false
+  })
+  res.json({message:'user created',userResponse})
+}catch(error){
+  res.status(500).send('server error')
+}
+}
+
+exports.googleSignIn = async (req, res) =>{
+  const email = req.body.email;
+  const password = req.body.password;
+
+  try {
+    const user = await admin.auth().getUserByEmail(email);
+
+    if (user && user.password === password) {
+      const customToken = await admin.auth().createCustomToken(user.uid);
+      res.json({ customToken });
+    } else {
+      res.status(401).send('Invalid email or password');
+    }
+  } catch (error) {
+    res.status(500).send('Sign-in error: ' + error.message);
+  }
+}

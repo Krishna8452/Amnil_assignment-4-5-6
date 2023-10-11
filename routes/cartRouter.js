@@ -7,5 +7,4 @@ const { addToCart, getAllCart, getCartById}  = require("../modules/cart/cartCont
  router.route('/add').post(addToCart)
  router.route('/').get(basicAuthentication, getAllCart)
  router.route('/:id').get(getCartById)
-
  module.exports = router;
