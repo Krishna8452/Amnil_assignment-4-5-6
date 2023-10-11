@@ -1,5 +1,8 @@
 const users = require('../../models/userModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+require("dotenv").config();
+
 exports.getAllUsers = async(req, res) => {
   const data = await users.find({});
   res.json(data);
@@ -56,3 +59,52 @@ exports.deleteUser = async (req, res) =>{
     res.status(500).json({ message: 'Server error' });
   }
 }
+
+exports.userLogin = async (req,res)=>{
+  // try {
+   const {username, password} = req.body;
+   const user = await users.findOne({username})
+   const passwordMatch = await bcrypt.compare(password, user.password )
+   if(!passwordMatch) {res.send("Invalid login details");}
+   const payload = {
+    user:{ 
+          name: user.username,
+          password:user.password
+          }
+        }
+   const token = jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:'1h'})
+   res.send({token: token})
+  // } catch (error) {
+  //   return res.status(400).send("Invalid details")
+  // }
+ }
+//  exports.loginUser = async (req, res) => {
+//   try {
+//     const { gmail, password } = req.body;
+//     if (!gmail || !password) {
+//       return res.status(400).json("both field are required...");
+//     }
+//     const user = await User.findOne({ gmail });
+//     const comparedPassword = await bcrypt.compare(password, user.password);
+
+//     if (user && comparedPassword) {
+//       const payload = {
+//         user: {
+//           name: user.name,
+//           gmail: user.gmail,
+//           id: user.id,
+//           phone: user.phone,
+//           password: user.password,
+//         },
+//       };
+//       const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+//         expiresIn: "60m",
+//       });
+//       return res.status(200).json({ accessToken });
+//     } else {
+//       return res.status(200).json({ error: "unmatched credential..." });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
