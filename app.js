@@ -1,11 +1,13 @@
-const port = 3000;
+const port = 5000;
 const express = require("express");
 const { default: mongoose } = require("mongoose");
+const cors = require('cors');
 
 const bodyParser = require("body-parser")
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -21,8 +23,7 @@ const connectDB = async() =>{
   })
 }
 
-connectDB();
-
+connectDB();   
 const storeRouter = require("./routes/storeRouter");
 const userRouter = require("./routes/userRouter");
 const productRouter = require("./routes/productRouter");
@@ -34,7 +35,6 @@ app.use("/products", productRouter);
 app.use("/orders", orderRouter);
 app.use("/carts", cartRouter);
 app.use("/store", storeRouter);
-
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

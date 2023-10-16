@@ -83,39 +83,24 @@ exports.userLogin = async (req,res)=>{
     return res.status(400).send("Invalid details")
   }
  }
-
- exports.googleSignUp = async (req, res) => {
-  try{
-    const user = {
-    email:req.body.email,
-    password:req.body.password
-  }
-  const userResponse = await admin.auth().createUser({
-    email:user.email,
-    password:user.password,
-    emailVerified:false,
-    disabled:false
-  })
-  res.json({message:'user created',userResponse})
-}catch(error){
-  res.status(500).send('server error')
-}
-}
-
-exports.googleSignIn = async (req, res) =>{
-  const email = req.body.email;
-  const password = req.body.password;
+exports.registerUser = async (req,res)=>{
+  const token = req.body.token;
 
   try {
-    const user = await admin.auth().getUserByEmail(email);
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
 
-    if (user && user.password === password) {
-      const customToken = await admin.auth().createCustomToken(user.uid);
-      res.json({ customToken });
-    } else {
-      res.status(401).send('Invalid email or password');
+    const userRecord = await admin.auth().getUser(uid);
+
+    const createUser ={
+      name:userRecord.displayName,
+      email:userRecord.email
     }
+    await users.create(createUser)
+    res.json(userRecord);  
   } catch (error) {
-    res.status(500).send('Sign-in error: ' + error.message);
+    console.error('Error verifying token or fetching user data:', error);
+    res.status(400).json({ error: 'Token verification failed' });
   }
 }
+

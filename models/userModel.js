@@ -5,13 +5,12 @@ const userSchema = new schema({
 name: String,
 username:{
         type:String,
-        required:[true, "username required"]
         }, 
 password:{
         type:String,
-        required:[true, "password required"]
         },
 address: String,
+email: String,
 phone:Number,
 },{
 timestamps: true
