@@ -85,19 +85,20 @@ exports.userLogin = async (req,res)=>{
  }
 exports.registerUser = async (req,res)=>{
   const token = req.body.token;
-
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
     const userRecord = await admin.auth().getUser(uid);
-
-    const createUser ={
-      name:userRecord.displayName,
-      email:userRecord.email
-    }
-    await users.create(createUser)
-    res.json(userRecord);  
+    const userExist =  await users.findOne({email: userRecord.email}) 
+        const createUser ={
+          name:userRecord.displayName,
+          email:userRecord.email
+        }
+      if(!userExist){
+       await users.create(createUser)
+      }
+      res.json(userRecord);
   } catch (error) {
     console.error('Error verifying token or fetching user data:', error);
     res.status(400).json({ error: 'Token verification failed' });

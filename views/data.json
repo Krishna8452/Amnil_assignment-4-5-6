@@ -1,0 +1,199 @@
+{
+  "applicants": [
+    {
+      "firstName": "Aanisha",
+      "middleName": "",
+      "lastName": "Manandhar",
+      "email": "uniqkrimson100@gmail.com",
+      "phoneNumber": "9800768098",
+      "level": "Associate",
+      "reference": "sdxfcgvhjbnkml,",
+      "technology": [
+        "React"
+      ],
+      "experience": "77777",
+      "status": "second_interview",
+      "salary_expectation": "Rs: 20000",
+      "file": "C:\\fakepath\\CV Manager SRS (4).docx",
+      "id": 3
+    },
+    {
+      "firstName": "Poojan",
+      "middleName": "",
+      "lastName": "Bhattarai",
+      "email": "uniqkrimson100@gmail.com",
+      "phoneNumber": "9800768098",
+      "level": "Associate",
+      "reference": "Facebook Page",
+      "technology": [
+        "React"
+      ],
+      "experience": "77777",
+      "status": "second_interview",
+      "salary_expectation": "Rs: 20000",
+      "file": "C:\\fakepath\\CV Manager SRS (3).docx",
+      "id": 6
+    },
+    {
+      "firstName": "Aman",
+      "middleName": "",
+      "lastName": "Dangol",
+      "email": "uniqkrimson100@gmail.com",
+      "phoneNumber": "9800768098",
+      "level": "Associate",
+      "reference": "hnbgfvdcs",
+      "technology": [
+        "JavaScript",
+        "Node.js"
+      ],
+      "experience": "444455",
+      "status": "first_interview",
+      "salary_expectation": "Minima consectetur p",
+      "file": "C:\\fakepath\\jpg2pdf (3).pdf",
+      "id": 7
+    },
+    {
+      "firstName": "Dinesh",
+      "middleName": "",
+      "lastName": "Chaudhary",
+      "email": "uniqkrimson100@gmail.com",
+      "phoneNumber": "9800768098",
+      "level": "Associate",
+      "reference": "linkedIn",
+      "technology": [
+        "React"
+      ],
+      "experience": "1 years of experience",
+      "status": "shortListed",
+      "salary_expectation": "Rs: 20000",
+      "file": "C:\\fakepath\\CV Manager SRS (3).docx",
+      "id": 8
+    },
+    {
+      "firstName": "Krishna",
+      "middleName": "chand",
+      "lastName": "Chaudhary",
+      "email": "uniqkrimson100@gmail.com",
+      "phoneNumber": "9800768098",
+      "level": "Associate",
+      "reference": "friends",
+      "technology": [
+        "React",
+        "Node.js"
+      ],
+      "experience": "likujhgfdsa",
+      "status": "second_interview",
+      "salary_expectation": "Rs: 20000",
+      "file": "C:\\fakepath\\Krishna's Resume (4).pdf",
+      "id": 9
+    }
+  ],
+  "interviewers": [
+    {
+      "interviewerName": "Dipendra Karki",
+      "email": "dipendra@gmail.com",
+      "position": "Senior",
+      "id": 5
+    },
+    {
+      "interviewerName": "Govinda Basnet",
+      "email": "govinda@gmail.com",
+      "position": "Associate",
+      "id": 6
+    },
+    {
+      "interviewerName": "krishna",
+      "email": "uniqkrimson100@gmail.com",
+      "position": "HR",
+      "id": 7
+    }
+  ],
+  "interviews": [
+    {
+      "interviewers": [
+        7,
+        6
+      ],
+      "applicant": 3,
+      "date": "2023-07-09T18:15:00.000Z",
+      "time": "2023-07-08T22:35:00.158Z",
+      "id": 2
+    },
+    {
+      "interviewers": [
+        5
+      ],
+      "applicant": 6,
+      "date": "2023-10-10T18:15:00.000Z",
+      "time": "2023-10-11T18:30:00.578Z",
+      "id": 3
+    },
+    {
+      "interviewers": [
+        6
+      ],
+      "applicant": 7,
+      "date": "2023-10-09T18:15:00.000Z",
+      "time": "2023-10-11T21:30:00.066Z",
+      "id": 4
+    },
+    {
+      "interviewers": [
+        6
+      ],
+      "applicant": 7,
+      "date": "2023-10-01T18:15:00.000Z",
+      "time": "2023-10-11T21:15:00.413Z",
+      "id": 5
+    }
+  ],
+  "offerLetters": [
+    {
+      "editor": "<p><strong>krishna&nbsp;<em> chaudhary</em></strong><br></p>",
+      "status": "Hired",
+      "applicant": 3,
+      "letterFile": "C:\\fakepath\\Uttam's Resume (3).pdf",
+      "id": 2
+    },
+    {
+      "editor": "<p>xcd</p>",
+      "status": "dfdfd",
+      "applicant": 3,
+      "letterFile": "C:\\fakepath\\Krishna's Resume (7).pdf",
+      "id": 3
+    }
+  ],
+  "assessmentTest": [
+    {
+      "applicant": 5,
+      "title": "Second",
+      "evaluation": "Very Poor",
+      "document": "C:\\fakepath\\2022-06-12.png",
+      "id": 1
+    }
+  ],
+  "templateLetters": [
+    {
+      "name": "Krishna",
+      "subject": "dfdfdf",
+      "body": "dfdfdfd",
+      "id": 3
+    },
+    {
+      "name": "sxd",
+      "subject": "sdsd",
+      "body": "dsdsds",
+      "id": 4
+    }
+  ],
+  "positions": [
+    {
+      "position": "Mentor",
+      "id": 5
+    },
+    {
+      "position": "CEO",
+      "id": 7
+    }
+  ]
+}
