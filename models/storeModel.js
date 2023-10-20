@@ -12,7 +12,7 @@ const storeSchema = new mongoose.Schema({
     },
     product_type: {
         type: String,
-        enum: ['Glocery', 'Electronics', 'Stationary', 'Clothing']
+        enum: ['Grocery', 'Electronics', 'Stationary', 'Clothing']
     },
     location: {
         type: {

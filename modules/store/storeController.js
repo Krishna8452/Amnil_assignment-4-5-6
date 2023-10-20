@@ -4,11 +4,11 @@ const stores = require("../../models/storeModel");
 
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs"); 
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../images/'));
+    cb(null, path.join(__dirname, "../../images/"));
   },
   filename: function (req, file, cb) {
     const name = Date.now() + "-" + file.originalname;
@@ -17,30 +17,38 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-exports.newLogo = upload.single('logo')
+exports.newLogo = upload.single("logo");
+
 exports.addStore = async (req, res) => {
-  let storeCreated = null; 
+  let storeCreated = null;
   try {
     const { userId, store_name } = req.body;
     const existingStore = await stores.findOne({ store_name });
     if (existingStore) {
-      return res.status(400).json({ message: 'Store with the same name already exists' });
+      return res
+        .status(400)
+        .json({ message: "Store with the same name already exists" });
     }
     if (!req.body.longitude || !req.body.latitude) {
-      return res.status(400).json({ message: 'please enter longitude and latitude' });
+      return res
+        .status(400)
+        .json({ message: "please enter longitude and latitude" });
     }
     const newStore = {
       store_name: store_name,
       product_type: req.body.product_type,
       userId: userId,
       location: {
-        type: 'Point',
-        coordinates: [parseFloat(req.body.longitude), parseFloat(req.body.latitude)]
+        type: "Point",
+        coordinates: [
+          parseFloat(req.body.longitude),
+          parseFloat(req.body.latitude),
+        ],
       },
-      logo: req.file.filename
-    }
+      logo: req.file.filename,
+    };
     storeCreated = await stores.create(newStore);
-    if (!storeCreated) { 
+    if (!storeCreated) {
       throw new Error("Store creation failed");
     }
   } catch (error) {
@@ -48,7 +56,7 @@ exports.addStore = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   } finally {
     if (req.file && storeCreated === null) {
-      fs.unlinkSync(path.join(__dirname, '../../images/' + req.file.filename));
+      fs.unlinkSync(path.join(__dirname, "../../images/" + req.file.filename));
     }
   }
   if (storeCreated) {
@@ -57,38 +65,100 @@ exports.addStore = async (req, res) => {
 };
 
 exports.getAllStores = async (req, res) => {
-  try{
-  const allStores = await stores.find({}).populate('userId')
-  res.status(200).json({ allStores, message: "all lists of stores are listed above"});
-  }catch(error){
-  res.status(500).json({ error: "Internal Server Error" });
+  try {
+    const allStores = await stores.find({}).populate("userId");
+    if(allStores.length == 0){
+      return res.status(404).json("there are no stores")
+    }
+    res
+      .status(200)
+      .json({ allStores, message: "all lists of stores are listed above" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-exports.getSingleStore = async (req, res) =>{
+exports.getSingleStore = async (req, res) => {
   try {
     const store_id = req.params.id;
-    const store_Id = await stores.findById(store_id).populate("userId");
-    if (!store_Id) {
-      res.status(404).json({ message: "store not found...." });
+    const getStore = await stores.findById(store_id).populate("userId");
+    if (!getStore) {
+      return res.status(404).json({ message: "store not found...." });
     }
-    res.status(200).json({ message: "store is", store_Id });
+    res.status(200).json({ message: "store is", getStore });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "internal Server Error" });
   }
-}
-exports.deleteStore = async(req,res)=>{
+};
+exports.deleteStore = async (req, res) => {
   try {
     const store_id = req.params.id;
-    if(!store_id)
-    {
-      res.status(404).json({error:"store id not found..."})
+    if (!store_id) {
+      return res.status(404).json({ error: "store id not found..." });
     }
     const deletedStore = await stores.findByIdAndDelete(store_id);
-    res.status(200).json({message:"store deleted...",deletedStore})
+    const deleteLogo = deletedStore.logo;
+    const filePath = path.join(__dirname, "../../images/" + deleteLogo);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    
+    res.status(200).json({ message: "store deleted...", deletedStore });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
-
   }
-}
+};
 
+exports.updateStore = async (req, res) => {
+  try {
+    const storeId = req.params.id;
+    const updatedData = await stores.findByIdAndUpdate(storeId, req.body, {
+      new: true,
+    });
+
+    if (!updatedData) {
+      res.status(404).json({ error: error.message });
+    }
+    const updatedStore = await stores.findById(storeId);
+    res
+      .status(200)
+      .json({ message: "store updated successfully", updatedStore });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getNearestStore = async (req, res) => {
+  try {
+    const { longitude, latitude, store_name } = req.body;
+
+    if (!latitude || !longitude) {
+      return res.status(400).json({ error: "Latitude and longitude are required..." });
+    }
+    const nearbyStores = await stores.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [parseFloat(longitude), parseFloat(latitude)],
+          },
+          distanceField: "dist.calculated",
+          maxDistance: 10000, 
+          spherical: true,
+        },
+      },
+      {
+        $match: {
+          store_name: new RegExp(store_name, "i"),
+        },
+      },
+    ]);
+    if(nearbyStores.length < 1){
+      res.status(404).json("no store found")
+    }
+    res.status(200).json({ message: "Nearby stores within 10KM radius", nearbyStores });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

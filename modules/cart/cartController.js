@@ -57,8 +57,8 @@ exports.addToCart = async (req, res) => {
         items,
         price: totalPrice.toFixed(2),
       };
-      await carts.create(cartData);
-      res.status(200).json({ success: "Cart created successfully" });
+      const cartCreated = await carts.create(cartData);
+      res.status(200).json({ success: "Cart created successfully", cartCreated});
     }
   } catch (error) {
     console.error(error);
