@@ -95,3 +95,16 @@ exports.getCartById = async (req, res) =>{
         res.status(500).json({error:"error occured"})
     }
 }
+
+exports.deleteCart = async (req, res) => {
+  try{
+    const cartIdToDelete = req.params.id;
+    if(!cartIdToDelete){
+      return res.status(404).json({ message:"cart id not found"})
+    }
+    const deletedCart = await carts.findByIdAndRemove(cartIdToDelete);
+    res.status(200).json({ message:"the cart is deleted successfully", deletedCart})
+  }catch(error){
+    res.status(500).json({error:"server error"})
+  }
+}

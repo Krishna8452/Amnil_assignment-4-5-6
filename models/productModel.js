@@ -6,11 +6,7 @@ const productSchema = new schema({
         price: Number,
         description: String,
         quantity: Number,
-        product_type: String,
-        image: {
-                type: String,
-                required: true
-        },
+        product_type: String
 },{
         timestamps:true
 })      

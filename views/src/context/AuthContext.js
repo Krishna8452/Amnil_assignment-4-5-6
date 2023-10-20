@@ -12,7 +12,6 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState({});
   
-  console.log("User info in the context =>", user?.accessToken)
   if(user?.accessToken){
     localStorage.setItem("token", user.accessToken)
   }
@@ -29,13 +28,12 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log('User', currentUser) 
+      //console.log('User', currentUser) 
     });
     return () => {
       unsubscribe();
     };
   }, [user]);
-console.log(user,'credentials')
   return (
     <AuthContext.Provider value={{ googleSignIn, logOut, user }}>
       {children}

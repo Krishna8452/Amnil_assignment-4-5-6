@@ -20,12 +20,13 @@ exports.getUser = async (req, res) =>{
 }
 
 exports.addUser = async (req, res) =>{
-  const {name, username, password, address, phone } = req.body
+  const {name, username, password, address, phone, email} = req.body
   const bcryptedPassword = await bcrypt.hash(password, 10);
   const newUser ={
     name:name,
     username:username,
     address:address,
+    email:email,
     phone:phone,
     password:bcryptedPassword
   }

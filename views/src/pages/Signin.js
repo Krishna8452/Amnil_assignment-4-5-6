@@ -19,7 +19,6 @@ const Signin = () => {
       navigate("/home");
     }
   },[]);
-  console.log(user?.accessToken,'k')
 
   return <>
       <div
