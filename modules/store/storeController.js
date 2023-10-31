@@ -60,7 +60,7 @@ exports.addStore = async (req, res) => {
     }
   }
   if (storeCreated) {
-    res.status(201).json({ storeCreated, message: "Store added successfully" });
+    res.status(201).json({  message: "Store created successfully", storeCreated,});
   }
 };
 
@@ -131,7 +131,7 @@ exports.updateStore = async (req, res) => {
 
 exports.getNearestStore = async (req, res) => {
   try {
-    const { longitude, latitude, store_name } = req.body;
+    const { longitude, latitude, store_name } = req.query;
 
     if (!latitude || !longitude) {
       return res.status(400).json({ error: "Latitude and longitude are required..." });
@@ -144,7 +144,7 @@ exports.getNearestStore = async (req, res) => {
             coordinates: [parseFloat(longitude), parseFloat(latitude)],
           },
           distanceField: "dist.calculated",
-          maxDistance: 10000, 
+          maxDistance: 1000000, 
           spherical: true,
         },
       },
@@ -155,7 +155,7 @@ exports.getNearestStore = async (req, res) => {
       },
     ]);
     if(nearbyStores.length < 1){
-      res.status(404).json("no store found")
+      return res.status(404).json("no store found")
     }
     res.status(200).json({ message: "Nearby stores within 10KM radius", nearbyStores });
   } catch (error) {

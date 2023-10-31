@@ -1,0 +1,16 @@
+<!-- invoice.mjml -->
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#333333" font-family="Helvetica">Invoice for your recent purchase</mj-text>
+        <mj-text font-size="16px" color="#666666" font-family="Helvetica">Thank you for your purchase.</mj-text>
+        <mj-text font-size="16px" color="#666666" font-family="Helvetica">Here is your invoice:</mj-text>
+        <mj-text font-size="16px" color="#666666" font-family="Helvetica">
+          Cart ID: {{cartId}}
+          Price: Rs {{price}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

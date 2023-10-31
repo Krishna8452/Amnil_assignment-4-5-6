@@ -21,6 +21,10 @@ exports.getUser = async (req, res) =>{
 
 exports.addUser = async (req, res) =>{
   const {name, username, password, address, phone, email} = req.body
+  const userExist = await users.findOne({username})
+  if(userExist){
+    return res.json("username already exists")
+  }
   const bcryptedPassword = await bcrypt.hash(password, 10);
   const newUser ={
     name:name,
@@ -79,7 +83,7 @@ exports.userLogin = async (req,res)=>{
       }
     }
    const token = jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:'1h'})
-   res.send({token: token})
+   res.send({message:"user logged in successfully!!!", token: token})
   }catch(error) {
     return res.status(400).send("Invalid details")
   }

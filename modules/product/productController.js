@@ -83,7 +83,8 @@ exports.outOfStockProduct = async (req, res) => {
 exports.filterProduct = async (req, res) => {
   try{
     const value = req.query.product_type;
-    const data = await products.find({ product_type: value });
+    const valuee = value.toLowerCase()
+    const data = await products.find({ product_type: valuee });
     res.json(data);
   }catch(error){
     res.status(500).json({ error: "An error occurred" });

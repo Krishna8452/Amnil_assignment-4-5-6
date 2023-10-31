@@ -11,8 +11,6 @@ const {
   getNearestStore
 } = require("../modules/store/storeController");
 
-
-
 /**
  * @swagger
  * components:
@@ -60,24 +58,24 @@ const {
  *     summary: Get nearest stores within a 10KM radius
  *     tags:
  *       - Store
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               longitude:
- *                 type: number
- *                 required: true
- *                 description: Longitude coordinate for the search location
- *               latitude:
- *                 type: number
- *                 required: true
- *                 description: Latitude coordinate for the search location
- *               store_name:
- *                 type: string
- *                 description: Search for stores by name (case-insensitive)
+ *     parameters:
+ *       - name: longitude
+ *         in: query
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Longitude coordinate for the search location
+ *       - name: latitude
+ *         in: query
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Latitude coordinate for the search location
+ *       - name: store_name
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Search for stores by name (case-insensitive)
  *     responses:
  *       '200':
  *         description: Nearby stores within a 10KM radius
