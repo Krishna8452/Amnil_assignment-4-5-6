@@ -9,8 +9,8 @@ const fs = require('fs');
 const path = require('path')
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL,
-    port: 587,
+    service: 'Gmail',
+    // port: 587,
     auth: {
         user: process.env.USER,
         pass: process.env.PASS
@@ -40,8 +40,8 @@ exports.checkout = async (req, res) => {
       const { html } = mjml2html(mjmlData);
 
       const mailOptions = {
-        from: "uniqkrimson100@gmail.com",
-        to: "krishnachaudhary8452@gmail.com", 
+        from: "krishnachaudhary8452@gmail.com",
+        to: "uniqkrimson100@gmail.com", 
         subject: "Invoice for your recent purchase",
         html: html,
       };
