@@ -1,6 +1,6 @@
 const carts = require("../../models/cartModel");
 const orders = require("../../models/orderModel");
-const users = require("../../models/userModel");
+require('dotenv').config()
 
 const express = require('express');
 const nodemailer = require('nodemailer');
@@ -9,18 +9,19 @@ const fs = require('fs');
 const path = require('path')
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: process.env.EMAIL,
     port: 587,
     auth: {
-        user: 'colleen.legros66@ethereal.email',
-        pass: 'qRa2YJmeXyawUfjauD'
+        user: process.env.USER,
+        pass: process.env.PASS
     }
 });
 
 exports.checkout = async (req, res) => {
   try {
     const cartId = req.params.cartId;
-    const cartToAdd = await carts.findById(cartId);
+    const cartToAdd = await carts.findById(cartId).populate("userId")
+    .populate("items.productId")
     if (cartToAdd.price >= 200) {
       const orderToAdd = {
         cartId,
@@ -53,7 +54,7 @@ exports.checkout = async (req, res) => {
         }
       });
 
-      res.json({ added, success: "cart checkout successfully" });
+      res.json({ cartToAdd, success: "cart checkouted successfully" });
     } else {
       res
         .status(400)
