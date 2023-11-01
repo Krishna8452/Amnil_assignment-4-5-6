@@ -1,27 +1,28 @@
 const carts = require("../../models/cartModel");
 const orders = require("../../models/orderModel");
-require('dotenv').config()
+require("dotenv").config();
 
-const express = require('express');
-const nodemailer = require('nodemailer');
-const mjml2html = require('mjml');
-const fs = require('fs');
-const path = require('path')
+const express = require("express");
+const nodemailer = require("nodemailer");
+const mjml2html = require("mjml");
+const fs = require("fs");
+const path = require("path");
 
 const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    // port: 587,
-    auth: {
-        user: process.env.USER,
-        pass: process.env.PASS
-    }
+  service: "Gmail",
+  auth: {
+    user: process.env.USER,
+    pass: process.env.PASS,
+  },
 });
 
 exports.checkout = async (req, res) => {
   try {
     const cartId = req.params.cartId;
-    const cartToAdd = await carts.findById(cartId).populate("userId")
-    .populate("items.productId")
+    const cartToAdd = await carts
+      .findById(cartId)
+      .populate("userId")
+      .populate("items.productId");
     if (cartToAdd.price >= 200) {
       const orderToAdd = {
         cartId,
@@ -32,7 +33,10 @@ exports.checkout = async (req, res) => {
       await carts.findByIdAndRemove(cartId);
       const added = await orders.create(orderToAdd);
 
-      const mjmlTemplate = fs.readFileSync(path.resolve(__dirname,"../../helper/invoice.mjml"), "utf-8");
+      const mjmlTemplate = fs.readFileSync(
+        path.resolve(__dirname, "../../helper/invoice.mjml"),
+        "utf-8"
+      );
       const mjmlData = mjmlTemplate
         .replace("{{cartId}}", orderToAdd.cartId)
         .replace("{{price}}", orderToAdd.price);
@@ -41,7 +45,7 @@ exports.checkout = async (req, res) => {
 
       const mailOptions = {
         from: "krishnachaudhary8452@gmail.com",
-        to: "uniqkrimson100@gmail.com", 
+        to: "uniqkrimson100@gmail.com",
         subject: "Invoice for your recent purchase",
         html: html,
       };
@@ -56,12 +60,10 @@ exports.checkout = async (req, res) => {
 
       res.json({ cartToAdd, success: "cart checkouted successfully" });
     } else {
-      res
-        .status(400)
-        .json({
-          message:
-            "There must  be minimum price of Rs 200 in shopping cart to checkout!!!!!",
-        });
+      res.status(400).json({
+        message:
+          "There must  be minimum price of Rs 200 in shopping cart to checkout!!!!!",
+      });
     }
   } catch (error) {
     res.status(500).json({ error: "failed to checkout the cart item" });

@@ -15,7 +15,6 @@ const {
 } = require("../modules/product/productController");
 
 
-
 /**
  * @swagger
  * components:
@@ -23,7 +22,7 @@ const {
  *     products:
  *       type: object
  *       properties:
- *         _id:
+ *         id:
  *           type: string
  *           description: Auto-generated product ID
  *         name:
@@ -41,24 +40,19 @@ const {
  *         product_type:
  *           type: string
  *           description: Product type
- *         image:
- *           type: string
- *           description: Product image URL
  *       required:
  *         - name
  *         - price
  *         - description
  *         - quantity
  *         - product_type
- *         - image
  *       example:
- *         _id: abc123
+ *         id: abc123
  *         name: Product Name
  *         price: 19.99
  *         description: Product Description
  *         quantity: 100
  *         product_type: Type
- *         image: https://example.com/product-image.jpg
  */
 
 /**
@@ -202,11 +196,10 @@ const {
  *                 $ref: '#/components/schemas/products'
  *       '500':
  *         description: Internal server error
-
  */
 
 /**
-* @swagger
+ * @swagger
  * /products/filter:
  *   get:
  *     summary: Filter products
@@ -230,7 +223,6 @@ const {
  *                 $ref: '#/components/schemas/products'
  *       '500':
  *         description: Internal server error
-
  */
 
 /**
@@ -254,7 +246,7 @@ const {
  */
 
 /**
-* @swagger
+ * @swagger
  * /products/search:
  *   get:
  *     summary: Search products
@@ -279,6 +271,8 @@ const {
  *       '500':
  *         description: Internal server error 
  */
+
+
 
 router.route("/outOfStock").get(outOfStockProduct);
 router.route("/filter").get(filterProduct);

@@ -1,40 +1,41 @@
-const products = require("../../models/productModel");
+const pool = require('../../db/db');
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const data = await products.find({});
-    if (!data) {
-      return res.status(404).json({ error: "product not found" });
-    }
-    res.json(data);
+    const query = 'SELECT * FROM products'; 
+    const { rows } = await pool.query(query);
+    res.json(rows);
   } catch (error) {
-    res.status(500).json({ message: "server error" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
-   
+
 exports.getProduct = async (req, res) => {
   const productId = req.params.id;
   try {
-    const data = await products.findById(productId);
-    if (!data) {
-      return res.status(404).json({ error: "product not found" });
+    const query = 'SELECT * FROM products WHERE id = $1'; 
+    const { rows } = await pool.query(query, [productId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(data);
+    res.json(rows[0]);
   } catch (error) {
-    res.status(500).json({ message: "server error" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.addProduct = async (req, res) => {
   const newProduct = req.body;
   try {
-    const data = await products.create(newProduct);
-    if (!data) {
-      return res.status(404).json({ error: "failed to create product" });
-    }
-    res.status(200).json({ success: "product created successfully!!" });
+    const {id, name, description, price, quantity, product_type } = newProduct;
+    const insertQuery = 'INSERT INTO products (id, name, description, price, quantity, product_type) VALUES ($1, $2, $3, $4, $5, $6)'; 
+    await pool.query(insertQuery, [id, name, description, price, quantity, product_type]);
+    res.status(200).json({ success: 'Product created successfully!!' });
   } catch (error) {
-    res.status(500).json({ message: "server error" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -42,77 +43,85 @@ exports.editProduct = async (req, res) => {
   try {
     const productId = req.params.id;
     const updates = req.body;
-    const updateProducts = await products.findByIdAndUpdate(
+    const updateQuery = 'UPDATE products SET name = $1, description = $2, price = $3, quantity = $4, product_type = $5 WHERE id = $6';
+    const { rowCount } = await pool.query(updateQuery, [
+      updates.name,
+      updates.description,
+      updates.price,
+      updates.quantity,
+      updates.product_type,
       productId,
-      updates,
-      { new: true }
-    );
-    if (!updateProducts) {
-      return res.status(404).json({ message: "product not found" });
+    ]);
+    if (rowCount === 0) {
+      return res.status(404).json({ message: 'Product not found' });
     }
+    res.status(200).json({ success: 'Product updated successfully!!' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: 'Server error' });
   }
-  res.status(200).json({ success: "product updated successfully!!" });
 };
+
 exports.deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const deleteProduct = await products.findByIdAndRemove(productId);
-    if (!deleteProduct) {
-      return res.status(404).json({ message: "product not found" });
+    const deleteQuery = 'DELETE FROM products WHERE id = $1'; 
+    const { rowCount } = await pool.query(deleteQuery, [productId]);
+    if (rowCount === 0) {
+      return res.status(404).json({ message: 'Product not found' });
     }
+    res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: 'Server error' });
   }
-  res.status(200).json({ message: "product deleted successfully" });
 };
 
 exports.outOfStockProduct = async (req, res) => {
   try {
     const quant = req.query.quantity;
-    const data = await products.find({ quantity: { $lt: quant } });
-    res.json(data);
+    const query = 'SELECT * FROM products WHERE quantity < $1'; 
+    const { rows } = await pool.query(query, [quant]);
+    res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred" });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.filterProduct = async (req, res) => {
-  try{
+  try {
     const value = req.query.product_type;
-    const valuee = value.toLowerCase()
-    const data = await products.find({ product_type: valuee });
-    res.json(data);
-  }catch(error){
-    res.status(500).json({ error: "An error occurred" });
-
+    const valuee = value.toLowerCase();
+    const query = 'SELECT * FROM products WHERE LOWER(product_type) = $1';
+    const { rows } = await pool.query(query, [valuee]);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
+
 exports.sortProduct = async (req, res) => {
-  try{
-    const data = await products.find({});
-    const sortedProduct = data.sort((a, b) => a.price - b.price);
-    res.json(sortedProduct);
-  }catch(error){
-    res.status(500).json({ error: "An error occurred" });
+  try {
+    const query = 'SELECT * FROM products ORDER BY price';
+    const { rows } = await pool.query(query);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.searchProduct = async (req, res) => {
   try {
     const query = req.query.name;
-    const data = await products.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" } },
-      ],
-    });
-    res.json(data);
+    const searchParam = `%${query}%`;
+    const queryText = 'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1'; 
+    const { rows } = await pool.query(queryText, [searchParam]);
+    res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    res.status(500).json({ message: 'Server error' });
   }
 };
