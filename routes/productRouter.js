@@ -12,6 +12,7 @@ const {
   filterProduct,
   sortProduct,
   searchProduct,
+  topTenSearchedProduct
 } = require("../modules/product/productController");
 
 
@@ -272,8 +273,30 @@ const {
  *         description: Internal server error 
  */
 
+/**
+ * @swagger
+ * /products/topTenSearchedProduct:
+ *   get:
+ *     summary: Get the top 10 most searched products
+ *     tags:
+ *       - Product
+ *     responses:
+ *       '200':
+ *         description: Top 10 most searched products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/products'
+ *       '500':
+ *         description: Internal server error
+ */
 
 
+
+
+router.route("/topTenSearchedProduct").get(topTenSearchedProduct);
 router.route("/outOfStock").get(outOfStockProduct);
 router.route("/filter").get(filterProduct);
 router.route("/sort").get(sortProduct);
@@ -283,5 +306,6 @@ router.route("/:id").get(getProduct);
 router.route("/add").post(addProduct);
 router.route("/edit/:id").put(editProduct);
 router.route("/delete/:id").delete(deleteProduct);
+
 
 module.exports = router;
