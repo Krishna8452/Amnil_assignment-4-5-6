@@ -113,29 +113,14 @@ exports.sortProduct = async (req, res) => {
   }
 };
 
-// exports.searchProduct = async (req, res) => {
-//   try {
-//     const query = req.query.name;
-//     const searchParam = `%${query}%`;
-//     const queryText = 'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1'; 
-//     const { rows } = await pool.query(queryText, [searchParam]);
-//     res.json(rows);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
 exports.searchProduct = async (req, res) => {
   try {
     const query = req.query.name;
     const searchParam = `%${query}%`;
     const queryText = 'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1';
     
-    // Execute the search query
     const { rows } = await pool.query(queryText, [searchParam]);
     
-    // Insert search history data
     for (const row of rows) {
       const insertHistoryQuery = 'INSERT INTO searchHistory (productId, searchCount) VALUES ($1, 1) ON CONFLICT (productId) DO UPDATE SET searchCount = searchHistory.searchCount + 1';
       await pool.query(insertHistoryQuery, [row.id]);
@@ -160,7 +145,7 @@ exports.topTenSearchedProduct = async (req, res) => {
     const { rows } = await pool.query(queryText);
     res.status(200).json({ success: "Top 10 most searched result:", rows });
   } catch (error) {
-    console.error(error); // Log the error message to the console
+    console.error(error); 
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const { admin } = require("../../firebase/admin");
 const pool = require('../../db/db')
 
-// Create a PostgreSQL client and connect to the database
 
 pool.connect()
 .then(()=>{
@@ -15,7 +14,7 @@ pool.connect()
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const query = "SELECT * FROM users"; // Replace 'users' with your PostgreSQL table name
+    const query = "SELECT * FROM users"; 
     const { rows } = await pool.query(query);
     res.json(rows);
   } catch (error) {
@@ -27,7 +26,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
   const userId = req.params.id;
   try {
-    const query = "SELECT * FROM users WHERE id = $1"; // Replace 'users' with your PostgreSQL table name
+    const query = "SELECT * FROM users WHERE id = $1"; 
     const { rows } = await pool.query(query, [userId]);
     if (rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -42,7 +41,7 @@ exports.getUser = async (req, res) => {
 exports.addUser = async (req, res) => {
   try {
     const {id, name, username, password, address, phone, email } = req.body;
-    const userExistQuery = "SELECT * FROM users WHERE username = $1"; // Replace 'users' with your PostgreSQL table name
+    const userExistQuery = "SELECT * FROM users WHERE username = $1"; 
     const { rows: existingUsers } = await pool.query(userExistQuery, [username]);
 
     if (existingUsers.length > 0) {
@@ -51,7 +50,7 @@ exports.addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const insertUserQuery =
-      "INSERT INTO users (id, name, username, hashedPassword, address, phone, email) VALUES ($1, $2, $3, $4, $5, $6, $7)"; // Replace 'users' with your PostgreSQL table name
+      "INSERT INTO users (id, name, username, hashedPassword, address, phone, email) VALUES ($1, $2, $3, $4, $5, $6, $7)"; 
     await pool.query(insertUserQuery, [id, name, username, hashedPassword, address, phone, email]);
 
     res.status(201).json({ success: "User created successfully" });
@@ -90,7 +89,7 @@ exports.editUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const deleteQuery = "DELETE FROM users WHERE id = $1"; // Replace 'users' with your PostgreSQL table name
+    const deleteQuery = "DELETE FROM users WHERE id = $1"; 
     const { rowCount } = await pool.query(deleteQuery, [userId]);
 
     if (rowCount === 0) {
@@ -107,7 +106,7 @@ exports.deleteUser = async (req, res) => {
 exports.userLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const userQuery = "SELECT * FROM users WHERE username = $1"; // Replace 'users' with your PostgreSQL table name
+    const userQuery = "SELECT * FROM users WHERE username = $1"; 
     const { rows: userRows } = await pool.query(userQuery, [username]);
 
     if (userRows.length === 0) {
@@ -143,11 +142,11 @@ exports.registerUser = async (req, res) => {
     const uid = decodedToken.uid;
 
     const userRecord = await admin.auth().getUser(uid);
-    const userQuery = "SELECT * FROM users WHERE email = $1"; // Replace 'users' with your PostgreSQL table name
+    const userQuery = "SELECT * FROM users WHERE email = $1";
     const { rows: userRows } = await pool.query(userQuery, [userRecord.email]);
 
     if (userRows.length === 0) {
-      const createUserQuery = "INSERT INTO users (name, email) VALUES ($1, $2)"; // Replace 'users' with your PostgreSQL table name
+      const createUserQuery = "INSERT INTO users (name, email) VALUES ($1, $2)"; 
       await pool.query(createUserQuery, [userRecord.displayName, userRecord.email]);
     }
 
