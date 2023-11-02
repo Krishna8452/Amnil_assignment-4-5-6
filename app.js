@@ -15,13 +15,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 const userRouter = require("./routes/userRouter");
 const productRouter = require("./routes/productRouter");
-// const cartRouter = require("./routes/cartRouter")
-// const orderRouter = require("./routes/orderRouter");
+const cartRouter = require("./routes/cartRouter")
 
 app.use("/users", userRouter);
 app.use("/products", productRouter);
-// app.use("/orders", orderRouter);
-// app.use("/carts", cartRouter);
+app.use("/carts", cartRouter);
 
   
 const options = {
