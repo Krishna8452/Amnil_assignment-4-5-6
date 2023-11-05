@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getAllOrders,
   addToCart,
   removeFromCart
-} = require("../modules/cart/cartController");
+} = require("../modules/order/orderController");
 
 
 /**
