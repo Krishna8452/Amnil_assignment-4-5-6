@@ -23,10 +23,7 @@ const {
  *     products:
  *       type: object
  *       properties:
- *         id:
- *           type: string
- *           description: Auto-generated product ID
- *         name:
+   *         name:
  *           type: string
  *           description: Product name
  *         price:
@@ -48,7 +45,6 @@ const {
  *         - quantity
  *         - product_type
  *       example:
- *         id: abc123
  *         name: Product Name
  *         price: 19.99
  *         description: Product Description

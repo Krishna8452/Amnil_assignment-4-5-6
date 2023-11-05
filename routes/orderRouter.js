@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const {
+  getAllOrders,
   addToCart,
-  getAllCart,
-  getCartById,
-  deleteCart
+  removeFromCart
 } = require("../modules/cart/cartController");
 
 
@@ -13,21 +12,21 @@ const {
  * @swagger
  * components:
  *   schemas:
- *     carts:
+ *     orders:
  *       type: object
  *       properties:
  *         userId:
  *           type: string
- *           description: The ID of the user who owns the cart.
+ *           description: The ID of the user who owns the order.
  *         items:
  *           type: array
- *           description: An array of items in the cart.
+ *           description: An array of items in the order.
  *           items:
  *             type: object
  *             properties:
  *               productId:
  *                 type: string
- *                 description: The ID of the product in the cart.
+ *                 description: The ID of the product in the order.
  *               quantity:
  *                 type: integer
  *                 description: The quantity of the product in the cart.
@@ -45,75 +44,75 @@ const {
 /**
  * @swagger
  * tags:
- *   - name: Cart
+ *   - name: Order
  *     description: Cart-related APIs
  */
 
 /**
  * @swagger
- * /carts/add:
+ * /orders/addtocart:
  *   post:
  *     summary: Add items to a shopping cart
  *     tags:
- *       - Cart
+ *       - Order
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/carts'
+ *             $ref: '#/components/schemas/orders'
  *     responses:
  *       '200':
- *         description: Items added to the cart successfully
+ *         description: Items added to the order successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/carts'
+ *               $ref: '#/components/schemas/orders'
  *       '500':
  *         description: Internal server error
  */
 
 /**
  * @swagger
- * /carts/:
+ * /orders/:
  *   get:
- *     summary: Get a list of all shopping carts
+ *     summary: Get a list of all shopping orders
  *     tags:
- *       - Cart
+ *       - Order
  *     responses:
  *       '200':
- *         description: List of shopping carts retrieved successfully
+ *         description: List of shopping orders retrieved successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/carts'
+ *                 $ref: '#/components/schemas/orders'
  *       '500':
  *         description: Internal server error
  */
 
 /**
  * @swagger
- * /carts/{id}:
+ * /orders/{id}:
  *   get:
- *     summary: Get a shopping cart by ID
+ *     summary: Get a shopping order by ID
  *     tags:
- *       - Cart
+ *       - Order
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the shopping cart to retrieve.
+ *         description: The ID of the shopping order to retrieve.
  *     responses:
  *       '200':
- *         description: Shopping cart retrieved successfully
+ *         description: Shopping order retrieved successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/carts'
+ *               $ref: '#/components/schemas/orders'
  *       '404':
  *         description: Shopping cart not found
  *       '500':
@@ -122,31 +121,35 @@ const {
 
 /**
  * @swagger
- * /carts/delete/{id}:
+ * /orders/removeFromCart:
  *   delete:
- *     summary: Delete a shopping cart by ID
+ *     summary: Remove a product from the shopping cart
  *     tags:
- *       - Cart
+ *       - Order
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the shopping cart to delete.
+ *         description: The ID of the user who owns the cart.
+ *       - in: query
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the product to be removed from the cart.
  *     responses:
  *       '200':
- *         description: Shopping cart deleted successfully
+ *         description: Product removed from the cart successfully
+ *       '400':
+ *         description: Bad request. Invalid input data.
  *       '404':
- *         description: Shopping cart not found
+ *         description: Not found. The specified product or cart does not exist.
  *       '500':
- *         description: Internal server error
+ *         description: Internal Server Error. An error occurred on the server.
  */
 
-
-
-router.route("/add").post(addToCart);
-router.route("/").get(getAllCart);
-router.route("/:id").get(getCartById);
-router.route("/delete/:id").delete(deleteCart);
+router.route("/removeFromCart").delete(removeFromCart)
+router.route("/addtocart").post(addToCart);
  module.exports = router;

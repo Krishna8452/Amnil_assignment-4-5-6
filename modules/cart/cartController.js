@@ -1,134 +1,176 @@
 const pool = require("../../db/db");
 
 exports.addToCart = async (req, res) => {
-  const { userId, items } = req.body;
+  const { items } = req.body;
+  const userId = parseInt(req.body.userId);
 
   try {
-    const existingCartQuery = "SELECT * FROM carts WHERE user_id = $1";
-    const { rows: existingCartRows } = await pool.query(existingCartQuery, [
-      userId,
-    ]);
+    const userExistsResult = await pool.query(
+      "SELECT * FROM users WHERE id = $1",
+      [userId]
+    );
 
-    if (existingCartRows.length > 0) {
-      let updatedItems = [...existingCartRows[0].items];
+    if (userExistsResult.rowCount === 0) {
+      return res.status(404).send("User not found");
+    }
 
-      for (const newItem of items) {
-        const existingItem = updatedItems.find(
-          (item) => item.product_id === newItem.productId
+    const cartExistsResult = await pool.query(
+      "SELECT * FROM carts WHERE user_id = $1",
+      [userId]
+    );
+
+    if (cartExistsResult.rowCount > 0) {
+      const cartId = cartExistsResult.rows[0].id;
+
+      for (const item of items) {
+        const productDetailsResult = await pool.query(
+          "SELECT * FROM products WHERE id = $1",
+          [item.productId]
         );
 
-        if (existingItem) {
-          existingItem.quantity += newItem.quantity;
+        if (productDetailsResult.rowCount === 0) {
+          return res.status(404).send("Product not found");
+        }
+
+        const productDetails = productDetailsResult.rows[0];
+
+        if (productDetails.quantity < item.quantity) {
+          return res.status(400).send("Product quantity is not available");
+        }
+
+        const existingProduct = await pool.query(
+          "SELECT * FROM carts_products WHERE cart_id = $1 AND product_id = $2",
+          [cartId, item.productId]
+        );
+
+        if (existingProduct.rowCount > 0) {
+          const existingProductData = existingProduct.rows[0];
+          const newQuantity = existingProductData.quantity + item.quantity;
+          const newPrice = newQuantity * productDetails.price;
+
+          await pool.query(
+            "UPDATE carts_products SET quantity = $1, price = $2 WHERE cart_id = $3 AND product_id = $4",
+            [newQuantity, newPrice, cartId, item.productId]
+          );
         } else {
-          updatedItems.push(newItem);
+          const newPrice = item.quantity * productDetails.price;
+          await pool.query(
+            "INSERT INTO carts_products (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)",
+            [cartId, item.productId, item.quantity, newPrice]
+          );
         }
       }
 
-      let totalPrice = 0;
-      for (const item of updatedItems) {
-        const productQuery = "SELECT * FROM products WHERE id = $1";
-        const { rows: productRows } = await pool.query(productQuery, [
-          item.productId,
-        ]);
+      const updatedTotalPriceQuery =
+        "SELECT SUM(price) AS total_price FROM carts_products WHERE cart_id = $1";
+      const updatedTotalPriceResult = await pool.query(updatedTotalPriceQuery, [cartId]);
 
-        if (productRows.length === 0) {
-          return res.status(404).json({ error: "Product not found" });
-        }
+      const updatedTotalPrice = updatedTotalPriceResult.rows[0].total_price;
 
-        const product = productRows[0];
-        totalPrice += product.price * item.quantity;
-      }
+      const updateCartQuery = "UPDATE carts SET total_price = $1 WHERE id = $2";
+      await pool.query(updateCartQuery, [updatedTotalPrice, cartId]);
 
-      const updateCartQuery =
-        "UPDATE carts SET items = $1, price = $2 WHERE user_id = $3";
-      await pool.query(updateCartQuery, [
-        updatedItems,
-        totalPrice.toFixed(2),
-        userId,
-      ]);
-
-      res.status(200).json({updatedItems, success: "Cart updated successfully" });
+      res.send("Cart updated successfully");
     } else {
-      let totalPrice = 0;
+      let total_price = 0;
+
+      const insertCartResult = await pool.query(
+        "INSERT INTO carts (user_id, total_price) VALUES ($1, $2) RETURNING id",
+        [userId, total_price]
+      );
+
       for (const item of items) {
-        const productQuery = "SELECT * FROM products WHERE id = $1";
-        const { rows: productRows } = await pool.query(productQuery, [
-          item.productId,
-        ]);
+        const productDetailsResult = await pool.query(
+          "SELECT * FROM products WHERE id = $1",
+          [item.productId]
+        );
 
-        if (productRows.length === 0) {
-          return res.status(404).json({ error: "Product not foundd" });
+        if (productDetailsResult.rowCount === 0) {
+          return res.status(404).send("Product not found");
         }
 
-        const product = productRows[0];
-        totalPrice += product.price * item.quantity;
+        const productDetails = productDetailsResult.rows[0];
+
+        if (productDetails.quantity < item.quantity) {
+          return res.status(400).send("Product quantity is not available");
+        }
+
+        const newPrice = item.quantity * productDetails.price;
+        total_price += newPrice;
+
+        await pool.query(
+          "INSERT INTO carts_products (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)",
+          [insertCartResult.rows[0].id, item.productId, item.quantity, newPrice]
+        );
       }
 
-      const cartData = {
-        user_id: userId,
-        items,
-        price: totalPrice.toFixed(2),
-      };
+      await pool.query(
+        "UPDATE carts SET total_price = $1 WHERE id = $2",
+        [total_price, insertCartResult.rows[0].id]
+      );
 
-      const insertCartQuery =
-        "INSERT INTO carts (user_id, items, price) VALUES ($1, $2, $3)";
-      await pool.query(insertCartQuery, [
-        cartData.user_id,
-        cartData.items,
-        cartData.price,
-      ]);
-
-      res
-        .status(200)
-        .json({ success: "Cart created successfully" });
+      res.send("New cart created with ID: " + insertCartResult.rows[0].id);
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: " server error" });
+    res.status(500).send("Internal Server Error");
   }
 };
 
-exports.getAllCart = async (req, res) => {
+
+exports.removeFromCart = async (req, res) => {
+  const userId = parseInt(req.query.userId);
+  const productId = parseInt(req.query.productId);
+
+  if (isNaN(userId) || isNaN(productId)) {
+    return res.status(400).send("Invalid userId or productId");
+  }
+
   try {
-    const { rows } = await pool.query('SELECT * FROM carts');
+    const userExistsResult = await pool.query(
+      "SELECT * FROM users WHERE id = $1",
+      [userId]
+    );
 
-    if (rows.length > 0) {
-      res.status(200).json({ allCarts: rows, message: "all data of carts are fetched successfully" });
-    } else {
-      res.status(404).json({ message: "no cart found" });
+    if (userExistsResult.rowCount === 0) {
+      return res.status(404).send("User not found");
     }
+
+    const cartExistsResult = await pool.query(
+      "SELECT * FROM carts WHERE user_id = $1",
+      [userId]
+    );
+
+    if (cartExistsResult.rowCount === 0) {
+      return res.status(404).send("Cart not found");
+    }
+
+    const cartId = cartExistsResult.rows[0].id;
+
+    const existingProduct = await pool.query(
+      "SELECT * FROM carts_products WHERE cart_id = $1 AND product_id = $2",
+      [cartId, productId]
+    );
+
+    if (existingProduct.rowCount === 0) {
+      return res.status(404).send("Product not found in the cart");
+    }
+
+    await pool.query(
+      "DELETE FROM carts_products WHERE cart_id = $1 AND product_id = $2",
+      [cartId, productId]
+    );
+
+    const updatedTotalPriceQuery =
+      "SELECT SUM(price) AS total_price FROM carts_products WHERE cart_id = $1";
+    const updatedTotalPriceResult = await pool.query(updatedTotalPriceQuery, [cartId]);
+    const updatedTotalPrice = updatedTotalPriceResult.rows[0].total_price;
+
+    await pool.query("UPDATE carts SET total_price = $1 WHERE id = $2", [updatedTotalPrice, cartId]);
+
+    res.send("Product removed from the cart, and cart updated");
   } catch (error) {
-    res.status(500).json({ error: "error occurred" });
+    res.status(500).send("Internal Server Error");
   }
 };
 
 
-exports.getCartById = async (req, res) => {
-  try {
-    const cartId = req.params.id;
-    const query = 'SELECT * FROM carts WHERE id = $1';
-
-    const { rows } = await pool.query(query, [cartId]);
-
-    if (rows.length > 0) {
-      res.status(200).json({ singleCart: rows[0], success: 'cart data by ID fetched successfully' });
-    } else {
-      res.status(404).json({ failed: 'the ID you entered does not contain any cart item' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "error occurred" });
-  }
-};
-
-exports.deleteCart = async (req, res) => {
-  try{
-    const cartIdToDelete = req.params.id;
-    if(!cartIdToDelete){
-      return res.status(404).json({ message:"cart id not found"})
-    }
-    const deletedCart = await pool.query("DELETE FROM carts WHERE id = $1",[cartIdToDelete]);
-    res.status(200).json({deletedCart, message:"the cart is deleted successfully", deletedCart})
-  }catch(error){
-    res.status(500).json({error:"server error"})
-  }
-}

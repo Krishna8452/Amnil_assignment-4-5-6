@@ -40,7 +40,7 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const {id, name, username, password, address, phone, email } = req.body;
+    const { name, username, password, address, phone, email } = req.body;
     const userExistQuery = "SELECT * FROM users WHERE username = $1"; 
     const { rows: existingUsers } = await pool.query(userExistQuery, [username]);
 
@@ -50,8 +50,8 @@ exports.addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const insertUserQuery =
-      "INSERT INTO users (id, name, username, hashedPassword, address, phone, email) VALUES ($1, $2, $3, $4, $5, $6, $7)"; 
-    await pool.query(insertUserQuery, [id, name, username, hashedPassword, address, phone, email]);
+      "INSERT INTO users ( name, username, hashedPassword, address, phone, email) VALUES ($1, $2, $3, $4, $5, $6)"; 
+    await pool.query(insertUserQuery, [name, username, hashedPassword, address, phone, email]);
 
     res.status(201).json({ success: "User created successfully" });
   } catch (error) {
